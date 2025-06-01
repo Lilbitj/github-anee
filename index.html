@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>All About You</title>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sacramento&display=swap" rel="stylesheet">
+  <style>
+    body {
+  font-family: 'Times New Roman', serif;
+  background-image: url('kaleybg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  color: #fff;
+  text-align: center;
+    }
+    #loadingScreen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: pink;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      color: white;
+      font-size: 2.0rem;
+      font-family: 'Courier New', monospace;
+      animation: fadeOut 1s ease forwards;
+      animation-delay: 0.5s;
+    }
+    .loader-heart {
+      font-size: 3rem;
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; visibility: hidden; }
+    }
+    #musicInfo {
+      position: absolute;
+      top: 1px;
+      left: 70px;
+      background: rgba(0,0,0,0.3);
+      padding: 5px 35px;
+      border-radius: 10px;
+      font-size: 14px;
+      color: green;
+      z-index: 10001;
+    }
+    #musicButton {
+      position: absolute;
+      top: 5px;
+      left: 15px;
+      background: #3333;
+      color: white;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      z-index: 10000;
+    }
+    .envelope {
+      position: relative;
+      top: 120px;
+      display: inline-block;
+      cursor: pointer;
+      background: #ff6a7f;
+      padding: 30px;
+      border-radius: 15px;
+      transition: transform 0.3s;
+    }
+    .envelope:hover {
+      transform: scale(1.05);
+    }
+    .letter-container, .translation-container {
+      margin-top: 30px;
+      display: none;
+      padding: 30px;
+      border-radius: 15px;
+      transition: transform 0.3s;
+      color: #ffff;
+      max-width: 320px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.7);
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .popup {
+      position: fixed;
+      bottom: 40%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: pink;
+      display: none;
+      border-radius: 20px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+      max-width: 500px;
+      z-index: 1000;
+    }
+    button {
+      margin-top: 30px;
+      background: pink;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .popup h2 {
+      font-size: 24px;
+      color: #b30059;
+    }
+    .btn {
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .btn h2 {
+      background-color: #ff9ff3 !important;
+      color: white !important;
+      border-radius: 12px !important;
+      font-weight: bold;
+    }
+    .full-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('pop.png');
+      background-size: cover;  
+      background-position: center;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 999;
+    }
+    .full-popup h2 {
+      color: #b30059;
+      font-size: 54px;
+      padding: 50px;
+      border-radius: 15px;
+    }
+    .emoji {
+      position: absolute;
+      font-size: 2rem;
+      opacity: 0;
+      animation: fall linear infinite 5s;
+      pointer-events: none;
+    }
+    @keyframes fall {
+      0% {
+        transform: translateY(-200px) rotate(0deg);
+        opacity: 0;
+      }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+    .photo-stack {
+      display: none;
+      max-width: 75%;
+      margin: 100px auto;
+      background: rgba(255,255,255,0.9);
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(13, 13, 13, 1);
+    }
+    p {
+      text-align: left;
+      line-height: 1.8;
+      font-size: 15px;
+    }
+    .button2 {
+      margin-top: 5px;
+      background: pink;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .polaroid {
+      display: inline-block;
+      padding: 20px;
+      background: transparent;
+      transform: rotate(var(--rotation));
+      transition: transform 0.3s;
+    }
+    .polaroid img {
+      width: 100%;
+      border-radius: 0px;
+    }
+    .credit-container {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      color: white;
+      font-size: 42px;
+      padding: 50px;
+      box-sizing: border-box;
+      overflow: hidden;
+      z-index: 9999;
+    }
+.credit-container.show {
+  display: block;
+  animation: slideUp 10s linear forwards;
+ }
+ .creditContent {
+  position: relative;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+
+.creditContent.show {
+  opacity: 1;
+}
+
+.typewriter {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  font-size: 18px;
+  color: white;
+  cursor: pointer;
+}
+.restart-button {
+  margin-top: 1rem;
+  padding: 10px 20px;
+  background-color: #ff69b4;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  display: none;
+}
+.restart-button:hover {
+  background-color: #ff85c1;
+}
+    #rejectPage {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('pop.png');
+      background-size: cover;
+      background-position: center;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: white;
+      font-size: 42px;
+      z-index: 999;
+    }
+    @keyframes slideUp {
+  0% { transform: translateY(100%); }
+  100% { transform: translateY(-100%); }
+}
+.typewriter {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 20px;
+  font-family: 'Courier New', monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 2px solid white;
+  width: 0;
+  animation: typing 4s steps(40, end) forwards, blink 0.75s step-end infinite;
+  z-index: 10000;
+  display: none;
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink {
+  50% { border-color: transparent; }
+}
+
+  </style>
+</head>
+<body>
+  <div id="loadingScreen">
+    <div class="loader-heart">❤️</div>
+    <p>Loading for a bit darling...</p>
+  </div>
+  <div id="musicInfo">ᯤ <span style="color: white;">Thinking Out Loud - Ed Sheeran</span></div>
+  <div id="musicButton">▶</div>
+  <audio id="bgMusic" src="ThinkingOutLoud.mp3"></audio>
+  <div class="envelope" onclick="openLetter()">
+    <h2>Letter, for you..<br>💌</h2>
+  </div>
+
+  <div class="letter-container" id="letter">
+    <p>Do you know? you are the perfect person in my eyes, i love everything about you, especially your smile, seeing your personality makes my heart bloom and your personality is like sunshine ray in the morning. <br><br>
+
+actually it took me a long time to gather the courage to tell you this, it feels awkward, but I will try to fight that feeling. i know this is strange, but i like you, i am comfortable when i am with you, will you be my girlfriend? whatever your answer i will accept, i will not be disappointed or sad, because since i dropped my heart to you it means that i am ready for all the consequences that i will receive in the future, so if you reject me it doesn't matter to me because here I just want to convey my feelings to you. I hope after today, we don't become awkward, i still want to live my days with you. i can always be your bestfriend.</p>
+    <button onclick="showTranslation()">Translate it pls!</button>
+  </div>
+
+  <div class="translation-container" id="translation">
+    <p>Tahukah kamu? kamu adalah orang yang sempurna di mataku, aku menyukai segala sesuatu tentangmu, terutama senyummu, keperibadian mu membuat hatiku berbunga-bunga dan kepribadian mu bagaikan sinar matahari di pagi hari.<br><br>
+
+Sebenarnya aku butuh waktu lama untuk mengumpulkan keberanian untuk mengatakan hal ini padamu, Rasanya canggung, tapi aku akan berusaha melawan perasaan itu. Aku tahu ini aneh, tapi aku menyukaimu, aku merasa nyaman saat bersamamu, maukah kamu menjadi pacarku? apapun jawabanmu akan aku terima, aku tidak akan kecewa atau sedih, karena sejak aku menjatuhkan hatiku padamu itu artinya aku siap dengan segala konsekuensi yang akan aku terima di kemudian hari, jadi jika kamu menolakku itu tidak masalah bagiku karena disini aku hanya ingin menyampaikan perasaanku padamu. Aku harap setelah hari ini, kita tidak menjadi canggung. bisa selalu menjadi sahabatmu.</p>
+    <button onclick="showQuestion()">Next 💕</button>
+  </div>
+
+  <div class="popup" id="popupQuestion">
+    <h2>Will you be mine? 🌸</h2>
+    <button class="btn btn-yes" onclick="accept()">Of course!</button>
+    <button class="btn btn-no" onclick="reject()">I'm sorry..</button>
+  </div>
+
+  <div id="flowerBox" class="full-popup">
+    <h2>OH MY GOD?! FR? THANK YOU SO MUCH 🩷</h2>
+    <button class="button2" onclick="showPhotos()">The gorgeous 📷</button>
+  </div>
+
+  <div class="photo-stack" id="photos">
+    <div class="polaroid" style="--rotation: 3deg"><img src="vs1.jpeg"></div>
+    <div class="polaroid" style="--rotation: -2deg"><img src="vs2.jpeg"></div>
+    <div class="polaroid" style="--rotation: 1deg"><img src="vs3.jpeg"></div>
+      <div class="polaroid" style="--rotation: 3deg"><img src="vs4.jpeg"></div>
+    <div class="polaroid" style="--rotation: -2deg"><img src="vs5.jpeg"></div>
+    <div class="polaroid" style="--rotation: -1deg"><img src="vs6.jpeg"></div>
+      <div class="polaroid" style="--rotation: 3deg"><img src="vs7.jpeg"></div>
+    <div class="polaroid" style="--rotation: -2deg"><img src="vs8.jpeg"></div>
+    <div class="polaroid" style="--rotation: 1deg"><img src="vs9.jpeg"></div>    
+       <div class="polaroid" style="--rotation: -1deg"><img src="vs10.jpeg"></div>
+    <button class="button"
+   onclick="showCredit()">Finish 💗</button>
+  </div>
+
+<div id="creditContent" class="credit-container">
+  <p>Jihane Al-Asghar</p>
+  <p>Special thanks to Kaley</p>
+  <p>Inspired by your smile</p>
+  <p>All texts, photos, and love by me</p>
+  <p>2025 © All About You</p>
+  </div>
+  
+ <div id="typewriter" class="typewriter"></div>
+<div id="rejectPage">
+  <p>That's okay!<br>You’re still amazing</p>
+<button id="rejectRestartButton" class="restart-button" onclick="resetPage()">Back to Start</button>
+</div>
+
+<script>    
+  const music = document.getElementById('bgMusic');
+  const musicButton = document.getElementById('musicButton');
+  musicButton.addEventListener('click', () => {
+    if (music.paused) {
+      music.play();
+      musicButton.textContent = '𓏵';
+    } else {
+      music.pause();
+      musicButton.textContent = '▶';
+    }
+ });      
+ 
+  function openLetter() {
+  document.querySelector('.envelope').style.display = 'none';
+  document.getElementById('letter').style.display = 'block';
+}
+    
+  function showTranslation() {
+    document.getElementById('letter').style.display = 'none';
+    document.getElementById('translation').style.display = 'block';
+  }
+
+  function showQuestion() {
+    document.getElementById('translation').style.display = 'none';
+    document.getElementById('popupQuestion').style.display = 'block';
+  }
+
+  function accept() {
+    document.getElementById('popupQuestion').style.display = 'none';
+    const flowerBox = document.getElementById('flowerBox');
+    flowerBox.style.display = 'flex';
+    const emojis = ["🤍", "🐻", "💍", "🌸"];
+    for (let i = 0; i < 50; i++) {
+      const emoji = document.createElement('div');
+      emoji.classList.add('emoji');
+      emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+      emoji.style.left = Math.random() * 100 + "vw";
+      emoji.style.top = Math.random() * -500 + "px";
+      emoji.style.animationDelay = Math.random() * 5 + "s";
+      emoji.style.fontSize = (Math.random() * 20 + 20) + "px";
+      flowerBox.appendChild(emoji);
+    }
+    functionTwo();
+  }
+
+  function functionTwo() {
+    setTimeout(() => {
+      Swal.fire({
+        title: 'I Love You!',
+        text: "Hi Kaley, thank you for being here 💖",
+        icon: 'info',    
+        confirmButtonText: 'Awww 🥺'
+      }).then(() => {
+        Swal.fire({
+          title: '⚠️ Just So You Know ⚠️',
+          text: "You're someone very special 💛",
+          icon: 'warning',
+          confirmButtonText: 'Awww okay 💛'
+        });
+      });
+    }, 500);
+  }
+
+  function reject() {
+  document.getElementById('popupQuestion').style.display = 'none';
+  setTimeout(() => {
+    Swal.fire({
+      title: "Ahh, it's okay",
+      text: "I appreciate your honesty",
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: 'Okay',
+      cancelButtonText: 'Back'
+    }).then((result) => {
+      if (result.dismiss === Swal.DismissReason.cancel) {
+        // Jika tekan "Back"
+        document.getElementById('popupQuestion').style.display = 'block';
+      } else {
+        setTimeout(() => {
+          Swal.fire({
+            title: '⚠️ Still My Favorite Person ⚠️',
+            text: "we can always be best-friend",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Thanks',
+            cancelButtonText: 'Back'
+          }).then((result2) => {
+            if (result2.dismiss === Swal.DismissReason.cancel) {
+              document.getElementById('popupQuestion').style.display = 'block';
+            } else {
+              document.getElementById('rejectPage').style.display = 'flex';
+              document.getElementById('rejectRestartButton').style.display = 'block';
+            }
+          });
+        }, 800);
+      }
+    });
+  }, 700);
+}
+  function showPhotos() {
+    document.getElementById('flowerBox').style.display = 'none';
+    document.getElementById('photos').style.display = 'block';
+  }
+
+  function showCredit() {
+  const photos = document.getElementById('photos');
+  const credit = document.getElementById('creditContent');
+  const typewriter = document.getElementById('typewriter');
+
+  if (!photos || !credit || !typewriter) {
+    console.error('Elemen tidak ditemukan');
+    return;
+  }
+
+  photos.style.transition = 'opacity 1.5s';
+  photos.style.opacity = 0;
+
+  setTimeout(() => {
+    photos.style.display = 'none';
+    credit.style.display = 'block';
+    credit.classList.add('show');
+
+    setTimeout(() => {
+      const today = new Date();
+      const tanggal = today.toLocaleDateString('id-ID', {
+        day: 'numeric', month: 'long', year: 'numeric'
+      });
+
+      typewriter.textContent = `Officially at ${tanggal}`;
+      typewriter.style.display = 'block';
+      typewriter.style.cursor = 'pointer';
+
+      typewriter.onclick = () => {
+        window.location.href = "mysteryegg.html";
+      };
+    }, 2000); // ubah jadi 2 detik biar gak terlalu lama
+  }, 1000);
+}
+  function resetPage() {
+  const hideById = [
+    'letter',
+    'translation',
+    'popupQuestion',
+    'flowerBox',
+    'photos',
+    'rejectPage',
+    'rejectRestartButton',
+    'creditContent',
+    'typewriterLink'
+  ];
+
+  hideById.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+
+  document.querySelectorAll('.emoji').forEach(e => e.remove());
+
+  //function Tampilkan amplop jika ada
+  const envelope = document.querySelector('.envelope');
+ if (envelope) envelope.style.display = 'inline-block';
+}
+</script>
+</body>
+</html>

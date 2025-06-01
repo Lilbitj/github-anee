@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mystery Egg</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #4b0009;
+      font-family: 'Times New Roman', Times, serif;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+
+    img {
+      width: 200px;
+      height: auto;
+      margin-bottom: 35px;
+      animation: pop 1s ease-in-out;
+    }
+
+    h1 {
+  font-size: 22px;
+  padding: 0 20px;
+  max-width: 500px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 1s ease-in-out 1.2s forwards;
+  margin-top: 20px; /* tambahkan ini untuk mengangkat teks ke atas */
+}
+
+    @keyframes pop {
+      0% {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Gambar gif ciuman -->
+  <img src="https://media1.tenor.com/m/_xgns4nEUpYAAAAd/kiss-kis.gif" alt="Kiss GIF" />
+
+  <!-- Teks romantis -->
+  <h1>Akhir dari semua ini sebenarnya, aku cuma mau bilang pingin cium kamu <br><br> ❤‍🔥💋💋</h1>
+
+</body>
+</html>
